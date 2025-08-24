@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fankoin White Paper v1.1</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 30%, #f59e0b 60%, #8b5cf6 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #8b5cf6, #ec4899, #f59e0b, #8b5cf6, #ec4899, #f59e0b);
+            background-size: 600% 600%;
+            animation: gradientShift 15s ease infinite;
+            z-index: -1;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.95), rgba(236, 72, 153, 0.95), rgba(245, 158, 11, 0.95));
+            border-radius: 30px;
+            box-shadow: 0 30px 60px rgba(139, 92, 246, 0.4), 0 0 100px rgba(236, 72, 153, 0.3);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255,255,255,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .header h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ffffff, #fef7ff, #fdf2f8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 40px rgba(255,255,255,0.8), 0 4px 8px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 2;
+            letter-spacing: -0.02em;
+        }
+
+        .version {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fef7ff;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .nav-tab {
+            padding: 1.2rem 2.5rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            font-weight: 700;
+            font-size: 1.1rem;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+
+        .nav-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-tab:hover::before {
+            left: 100%;
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899, #f59e0b);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(139, 92, 246, 0.5), 0 0 40px rgba(236, 72, 153, 0.4);
+            border-color: rgba(255,255,255,0.5);
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .content-section {
+            display: none;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.3), 0 0 60px rgba(236, 72, 153, 0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #8b5cf6, #ec4899, #f59e0b);
+            border-radius: 30px 30px 0 0;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, #ffffff, #fef7ff, #fdf2f8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: -0.01em;
+        }
+
+        .section h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1.2rem;
+            color: #fef7ff;
+            font-weight: 700;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+
+        .section p, .section li {
+            margin-bottom: 1.2rem;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #fef7ff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+            font-weight: 400;
+        }
+
+        .section ul {
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(236, 72, 153, 0.4), rgba(245, 158, 11, 0.3));
+            border-left: 6px solid #ec4899;
+            padding: 2rem;
+            margin: 2.5rem 0;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+            position: relative;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+        }
+
+        .highlight-box::before {
+            content: '💡';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899, #f59e0b);
+            padding: 10px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .principles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .principle-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .principle-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3), 0 0 20px rgba(236, 72, 153, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .principle-item h4 {
+            color: #fef7ff;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .principle-item p {
+            color: #ffffff;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            padding: 2.5rem;
+            border-radius: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.4s ease;
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #8b5cf6, #ec4899, #f59e0b);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(139, 92, 246, 0.4), 0 0 60px rgba(236, 72, 153, 0.3);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .feature-card h3 {
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .feature-card p {
+            color: #fef7ff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+
+        .chart-container {
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 15px 35px rgba(139, 92, 246, 0.3);
+        }
+
+        .chart-container h3, .chart-container h4 {
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(236, 72, 153, 0.4), rgba(245, 158, 11, 0.3));
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        .stat-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(139, 92, 246, 0.4), 0 0 40px rgba(236, 72, 153, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffffff, #fef7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #fef7ff;
+            margin-top: 0.5rem;
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2.5rem 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            border-radius: 15px;
+            overflow: hidden;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 15px 35px rgba(139, 92, 246, 0.3);
+        }
+
+        .table th, .table td {
+            padding: 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            color: #fef7ff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .table th {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899, #f59e0b);
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .table tr:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8b5cf6, #ec4899, #f59e0b);
+            border-radius: 10px;
+            transition: width 2s ease;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        }
+
+        .timeline {
+            position: relative;
+            margin: 3rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #8b5cf6, #ec4899, #f59e0b);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            display: flex;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 0 2rem;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        .timeline-content h4 {
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .timeline-content p {
+            color: #fef7ff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+
+        .timeline-dot {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899, #f59e0b);
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid rgba(255,255,255,0.5);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 3rem 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .diagram-box {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            padding: 1.5rem 2rem;
+            border-radius: 15px;
+            margin: 1rem;
+            font-weight: 600;
+            text-align: center;
+            min-width: 200px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .diagram-arrow {
+            font-size: 2rem;
+            color: #f59e0b;
+            margin: 0.5rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item {
+                flex-direction: column;
+            }
+
+            .timeline-dot {
+                left: 20px;
+            }
+
+            .timeline-content {
+                margin-left: 3rem;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    <div class="floating-elements">
+        <div class="floating-circle" style="width: 100px; height: 100px; top: 10%; left: 10%; animation-delay: 0s;"></div>
+        <div class="floating-circle" style="width: 150px; height: 150px; top: 20%; right: 10%; animation-delay: 2s;"></div>
+        <div class="floating-circle" style="width: 80px; height: 80px; bottom: 20%; left: 20%; animation-delay: 4s;"></div>
+        <div class="floating-circle" style="width: 120px; height: 120px; bottom: 10%; right: 20%; animation-delay: 1s;"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Fankoin</h1>
+            <div class="version">White Paper Version 1.1 — August 10, 2025</div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('overview')">Overview</button>
+            <button class="nav-tab" onclick="showSection('technical')">Technical</button>
+            <button class="nav-tab" onclick="showSection('tokenomics')">Tokenomics</button>
+            <button class="nav-tab" onclick="showSection('team')">Team</button>
+            <button class="nav-tab" onclick="showSection('analytics')">Analytics</button>
+        </div>
+
+        <div id="overview" class="content-section active">
+            <div class="section">
+                <h2>1. Executive Summary</h2>
+                <p>Fankoin is a blockchain platform and ecosystem designed to power fan-driven economies in entertainment — spanning music, film, sports, esports, television, and online creators.</p>
+                
+                <div class="highlight-box">
+                    <p><strong>Unlike traditional fan token systems that rely solely on fungible tokens, Fankoin Fan Tokens are fractionalized Digital Assets:</strong></p>
+                    <ul>
+                        <li>Each represents a unique, non-fungible digital asset (e.g., a special edition artwork, film scene, concert pass)</li>
+                        <li>Fractionalized into ERC-compatible shards (FAN-FRAC standard) so multiple fans can co-own a high-value asset</li>
+                    </ul>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">$2.1B</div>
+                        <div class="stat-label">Fan Token Market Size</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">45M</div>
+                        <div class="stat-label">Active NFT Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">78%</div>
+                        <div class="stat-label">Fan Engagement Growth</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">156</div>
+                        <div class="stat-label">Entertainment Partners</div>
+                    </div>
+                </div>
+
+                <p>In addition to Fan Tokens, creators can mint other custom digital assets — from in-film props and behind-the-scenes moments to tickets, VIP passes, and licensed collectibles — all tradable within the Fankoin ecosystem.</p>
+                
+                <p>This approach merges the scarcity and collectability of Digital Assets with the liquidity and accessibility of fungible tokens, making Fankoin ideal for long-term engagement and secondary-market monetization.</p>
+            </div>
+
+            <div class="section">
+                <h2>2. Problem Statement</h2>
+                <div class="chart-container">
+                    <h3>Traditional vs. Blockchain Fan Engagement</h3>
+                    <canvas id="problemChart" width="400" height="200"></canvas>
+                </div>
+                <ul>
+                    <li>Traditional fan engagement fails to let audiences own a piece of the entertainment they love — most monetization is transactional, not participatory.</li>
+                    <li>Digital Asset markets have proven the power of digital collectability but lack easy fractional ownership for mainstream fans.</li>
+                    <li>Existing token launchpads (e.g., pump.fun) make creation easy but prioritize speculation over sustainable, utility-backed assets.</li>
+                    <li>Fan token ecosystems (e.g., Chiliz) focus mainly on sports and limit asset flexibility for creators in other entertainment sectors.</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>3. Vision & Goals</h2>
+                <p>Fankoin's mission is to become the entertainment industry's blockchain backbone, enabling:</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h3>🎭 Fractionalized Digital Asset Fan Tokens</h3>
+                        <p>Fans co-own unique digital assets tied to creators, teams, or productions.</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%;"></div>
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🎨 Custom Creator Assets</h3>
+                        <p>Mintable by verified creators, including in-film props, music stems, unreleased footage, ticket NFTs, and IP-licensed collectibles.</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 92%;"></div>
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h3>⚡ True Utility</h3>
+                        <p>Token-gated content, voting rights, presale access, and potential on-chain royalty participation.</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 78%;"></div>
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h3>💧 Accessible Liquidity</h3>
+                        <p>Fractional ownership makes high-value assets accessible to regular fans.</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 95%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>4. High-Level Architecture</h2>
+                <p><strong>Base Layer:</strong> Built on Cyclone Blockchain for high throughput, low fees, and full smart-contract capability.</p>
+                
+                <div class="architecture-diagram">
+                    <div class="diagram-box">Creator Wallet</div>
+                    <div class="diagram-arrow">↓</div>
+                    <div class="diagram-box">Fankoin Launchpad</div>
+                    <div class="diagram-arrow">↓</div>
+                    <div class="diagram-box">FAN-FRAC Smart Contract</div>
+                    <div class="diagram-arrow">↓</div>
+                    <div class="diagram-box">Fractionalized NFT Marketplace</div>
+                </div>
+
+                <h3>Core Asset Standards:</h3>
+                <ul>
+                    <li><strong>FAN:</strong> platform governance token (fungible)</li>
+                    <li><strong>Fan Tokens:</strong> Digital Asset-based tokens fractionalized via FAN-FRAC protocol, enabling co-ownership</li>
+                    <li><strong>Creator Assets:</strong> additional Digital Assets or semi-fungible tokens (ERC-1155 style) for tickets, merch rights, event passes, or media collectibles</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <h3>Fractionalization Mechanism:</h3>
+                    <ol>
+                        <li>Digital Asset is locked in a smart contract</li>
+                        <li>Fungible shards (fractions) are minted and distributed or sold to fans</li>
+                        <li>Fractions can be traded on the marketplace, staked for benefits, or redeemed collectively to unlock the underlying Digital Asset</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div id="technical" class="content-section">
+            <div class="section">
+                <h2>5. Key Product Components</h2>
+                
+                <h3>5.1 Fankoin Launchpad (FanLaunch)</h3>
+                <div class="chart-container">
+                    <h4>Launch Success Rate by Category</h4>
+                    <canvas id="launchChart" width="400" height="200"></canvas>
+                </div>
+                <ul>
+                    <li>Creators can launch fractionalized Digital Asset Fan Tokens with integrated utility modules</li>
+                    <li>Mandatory transparency: show asset metadata, fraction supply, creator holdings, and intended benefits</li>
+                    <li>Fans can instantly purchase fractions in stablecoins or FAN tokens</li>
+                </ul>
+
+                <h3>5.2 Creator Digital Asset Suite</h3>
+                <p>Verified creators can mint:</p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>🎬 Film Scene Digital Assets</h4>
+                        <p>Unique clips, behind-the-scenes shots</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🏆 Physical-Asset-Linked Digital Assets</h4>
+                        <p>Movie prop with on-chain proof of ownership</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🎫 Event Ticket Digital Assets</h4>
+                        <p>Redeemable for shows, premieres, or meetups</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📜 Licensable IP Digital Assets</h4>
+                        <p>Limited rights to reuse soundtracks, footage, or designs</p>
+                    </div>
+                </div>
+
+                <h3>5.3 Marketplace & Fraction Exchange</h3>
+                <div class="chart-container">
+                    <h4>Trading Volume Growth</h4>
+                    <canvas id="volumeChart" width="400" height="200"></canvas>
+                </div>
+                <ul>
+                    <li>AMM-powered trading for fractional Fan Tokens</li>
+                    <li>Full Digital Asset marketplace for one-off assets</li>
+                    <li>"Fraction Buyout" mechanism: if enough fractions are bought back, the owner can redeem the whole Digital Asset</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="tokenomics" class="content-section">
+            <div class="section">
+                <h2>6. Tokenomics</h2>
+                
+                <div class="chart-grid">
+                    <div class="chart-container">
+                        <h3>FAN Token Distribution</h3>
+                        <canvas id="distributionChart" width="400" height="400"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Revenue Projections (5 Years)</h3>
+                        <canvas id="revenueChart" width="400" height="400"></canvas>
+                    </div>
+                </div>
+                
+                <h3>6.1 FAN — Governance Token</h3>
+                <div class="highlight-box">
+                    <h4>Use Cases:</h4>
+                    <ul>
+                        <li>Platform governance</li>
+                        <li>Fee discounts</li>
+                        <li>Boosting creator launches (staking)</li>
+                        <li>Fraction redemption voting</li>
+                    </ul>
+                </div>
+
+                <h3>6.2 FAN-FRAC — Fraction Tokens</h3>
+                <ul>
+                    <li>Fungible ERC-compatible shards representing co-ownership of a parent Digital Asset</li>
+                    <li>Can be redeemed collectively for the underlying Digital Asset or traded freely</li>
+                </ul>
+
+                <h3>6.3 Creator Assets</h3>
+                <ul>
+                    <li>Supply set by creator</li>
+                    <li>Can include built-in royalties to the creator or to FAN treasury</li>
+                    <li>Cross-asset utility — e.g., holding a certain film prop Digital Asset may boost voting power in the related Fan Token DAO</li>
+                </ul>
+
+                <h3>Token Distribution Model</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Allocation</th>
+                            <th>Percentage</th>
+                            <th>Tokens (M)</th>
+                            <th>Vesting</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Community & Rewards</td>
+                            <td>30%</td>
+                            <td>300</td>
+                            <td>4 years linear</td>
+                        </tr>
+                        <tr>
+                            <td>Ecosystem & Partners</td>
+                            <td>20%</td>
+                            <td>200</td>
+                            <td>3 years linear</td>
+                        </tr>
+                        <tr>
+                            <td>Team & Founders</td>
+                            <td>20%</td>
+                            <td>200</td>
+                            <td>1 year cliff, 4 years vest</td>
+                        </tr>
+                        <tr>
+                            <td>Treasury</td>
+                            <td>20%</td>
+                            <td>200</td>
+                            <td>DAO controlled</td>
+                        </tr>
+                        <tr>
+                            <td>Public Sale</td>
+                            <td>10%</td>
+                            <td>100</td>
+                            <td>No vesting</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="team" class="content-section">
+            <div class="section">
+                <h2>12. Team & Leadership</h2>
+                
+                <div class="highlight-box">
+                    <h3>🚀 Founding Vision</h3>
+                    <p><strong>The founding team of businessofcinema.com and Ethereum Foundation are the creators of Fan Koin.</strong></p>
+                    <p>BOC with a distinguished history of innovation dating back to 2005, possesses extensive experience in cultivating network effects within the Indian market. Between 2009 and 2012, they played a pivotal role in facilitating the mass migration of celebrities and film production companies to platforms such as Facebook and YouTube, thereby establishing a significant network effect for global celebrities engaging with these digital channels.</p>
+                    <p><strong>This foundational network underpins our conservative valuation projections, and we believe that strategically harnessing this network effect positions the company to become a trillion-dollar enterprise by unlocking a transformative, creator-driven fan economy within the entertainment industry.</strong></p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">2005</div>
+                        <div class="stat-label">Founded BOC</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">2009-2012</div>
+                        <div class="stat-label">Celebrity Migration Era</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">$1T</div>
+                        <div class="stat-label">Valuation Target</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">Global</div>
+                        <div class="stat-label">Network Effect</div>
+                    </div>
+                </div>
+
+                <h3>🔗 Blockchain Architects</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>Taylor Gerring</h4>
+                        <p><strong>Angel Investor (Ethereum Co-founder)</strong><br>
+                        Strategic blockchain vision and foundational expertise</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Viktor Toth</h4>
+                        <p><strong>CTO (Architect Ethereum Swarm Foundation)</strong><br>
+                        Decentralized storage and protocol architecture</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Sergei Cobs</h4>
+                        <p><strong>Blockchain Systems Architect</strong><br>
+                        Smart contract optimization and security</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Dr. Daniel Nagy</h4>
+                        <p><strong>Founder Ethereum Swarm</strong><br>
+                        Distributed systems and consensus mechanisms</p>
+                    </div>
+                </div>
+
+                <h3>🚀 Technology & Growth Leaders</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>Hemant Arora</h4>
+                        <p><strong>ex-Head of Sales, TikTok</strong><br>
+                        Strategic sales and market expansion expertise</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Billy White</h4>
+                        <p><strong>ex-Apple, Netscape</strong><br>
+                        Technical innovation and product development</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Sridhar Sodhi</h4>
+                        <p><strong>AI Programmer</strong><br>
+                        AI-driven solutions and machine learning integration</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Jozeph Jagan</h4>
+                        <p><strong>Blockchain Marketing Expert</strong><br>
+                        Community development and Web3 marketing</p>
+                    </div>
+                </div>
+
+                <h3>🎭 Entertainment & Creative Vision</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>Golshifteh Farahani</h4>
+                        <p><strong>International Artist & Actress</strong><br>
+                        Creative vision and global entertainment industry experience</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Sajid Khan</h4>
+                        <p><strong>Award-Winning Music Producer</strong><br>
+                        Music industry expertise and creative production</p>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>💎 Ethereum Foundation Partnership</h3>
+                    <p><strong>Many key founding team members of the Ethereum core team are contributing their expertise to the project.</strong> This powerful combination of seasoned leaders and emerging talent is uniquely positioned to drive innovation, achieve excellence, and unlock the vast potential of our venture within the evolving digital landscape.</p>
+                    <p>Supported by invaluable guidance from the Ethereum founding team, we unite industry-leading expertise across blockchain, AI, and entertainment to drive transformative innovation.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="analytics" class="content-section">
+            <div class="section">
+                <h2>13. Utility & Use Cases</h2>
+                
+                <div class="chart-container">
+                    <h3>User Engagement by Entertainment Vertical</h3>
+                    <canvas id="engagementChart" width="400" height="300"></canvas>
+                </div>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h3>🎬 Film Example</h3>
+                        <p>A director mints a premiere ticket Digital Asset and fractionalizes a "signed script Digital Asset" into 1,000 fractions. Fans buy fractions to co-own the script and get exclusive behind-the-scenes voting rights.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🎵 Music Example</h3>
+                        <p>An artist releases an unreleased track as a Digital Asset. The asset is fractionalized into 500 pieces; holders vote on whether to release it publicly or keep it exclusive.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🏆 Sports/Esports Example</h3>
+                        <p>Team mints trophy Digital Asset linked to a championship win; fractions sold to fans with perks like voting on next jersey design.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>14. Risk Mitigation</h2>
+                <div class="chart-container">
+                    <h3>Security Score by Risk Category</h3>
+                    <canvas id="securityChart" width="400" height="300"></canvas>
+                </div>
+                <ul>
+                    <li>Verification program for creators to reduce fraud</li>
+                    <li>Asset metadata stored on-chain or via decentralized storage (IPFS/Arweave)</li>
+                    <li>Fraction supply caps and transparent vesting schedules</li>
+                    <li>Legal frameworks for IP-linked Digital Assets to avoid rights disputes</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>15. Roadmap</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <h4>Q4 2025</h4>
+                            <p>FAN token + FAN-FRAC protocol testnet</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <h4>Q1 2026</h4>
+                            <p>Fractionalized Digital Asset marketplace beta</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <h4>Q2 2026</h4>
+                            <p>Creator Digital Asset Suite launch</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <h4>Q3 2026</h4>
+                            <p>Full governance activation + cross-chain bridges</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>16. Differentiation</h2>
+                <div class="highlight-box">
+                    <ul>
+                        <li><strong>Unlike pump.fun:</strong> Fankoin's launchpad enforces utility + verification and integrates Digital Asset fractionalization to create asset-backed fan economies</li>
+                        <li><strong>Unlike Chiliz:</strong> Fankoin expands beyond sports to film, music, and online creators, while enabling custom asset minting for diverse engagement</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>17. Conclusion</h2>
+                <p>Fankoin bridges the gap between collectible Digital Assets and liquid fan tokens by enabling fractionalized, utility-rich, creator-driven digital assets — all within a transparent, compliant, and entertainment-first blockchain platform.</p>
+                
+                <div class="highlight-box">
+                    <h3>Next Steps Available:</h3>
+                    <ul>
+                        <li>Full technical appendix with FAN-FRAC fractionalization smart contract logic & diagrams</li>
+                        <li>Tokenomics spreadsheet showing fractional market liquidity flow</li>
+                        <li>Investor-ready PDF with visuals of how Fan Tokens + Creator Assets interact</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Initialize charts when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Problem Chart
+            const problemCtx = document.getElementById('problemChart').getContext('2d');
+            new Chart(problemCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Traditional', 'Blockchain'],
+                    datasets: [{
+                        label: 'Fan Ownership %',
+                        data: [15, 85],
+                        backgroundColor: ['rgba(255, 99, 132, 0.8)', 'rgba(139, 92, 246, 0.8)']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: 'white' } }
+                    },
+                    scales: {
+                        y: { ticks: { color: 'white' } },
+                        x: { ticks: { color: 'white' } }
+                    }
+                }
+            });
+
+            // Launch Chart
+            const launchCtx = document.getElementById('launchChart').getContext('2d');
+            new Chart(launchCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Music', 'Film', 'Sports', 'Gaming', 'TV'],
+                    datasets: [{
+                        data: [35, 25, 20, 15, 5],
+                        backgroundColor: [
+                            'rgba(139, 92, 246, 0.8)',
+                            'rgba(236, 72, 153, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(34, 197, 94, 0.8)',
+                            'rgba(239, 68, 68, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: 'white' } }
+                    }
+                }
+            });
+
+            // Volume Chart
+            const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+            new Chart(volumeCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Trading Volume ($M)',
+                        data: [12, 19, 25, 35, 48, 62],
+                        borderColor: 'rgba(139, 92, 246, 1)',
+                        backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: 'white' } }
+                    },
+                    scales: {
+                        y: { ticks: { color: 'white' } },
+                        x: { ticks: { color: 'white' } }
+                    }
+                }
+            });
+
+            // Distribution Chart
+            const distributionCtx = document.getElementById('distributionChart').getContext('2d');
+            new Chart(distributionCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Community & Rewards', 'Ecosystem & Partners', 'Team & Founders', 'Treasury', 'Public Sale'],
+                    datasets: [{
+                        data: [30, 20, 20, 20, 10],
+                        backgroundColor: [
+                            'rgba(139, 92, 246, 0.8)',
+                            'rgba(236, 72, 153, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(34, 197, 94, 0.8)',
+                            'rgba(239, 68, 68, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: 'white' } }
+                    }
+                }
+            });
+
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['2025', '2026', '2027', '2028', '2029'],
+                    datasets: [{
+                        label: 'Revenue ($M)',
+                        data: [5, 25, 75, 150, 300],
+                        borderColor: 'rgba(236, 72, 153, 1)',
+                        backgroundColor: 'rgba(236, 72, 153, 0.2)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: 'white' } }
+                    },
+                    scales: {
+                        y: { ticks: { color: 'white' } },
+                        x: { ticks: { color: 'white' } }
+                    }
+                }
+            });
+
+            // Engagement Chart
+            const engagementCtx = document.getElementById('engagementChart').getContext('2d');
+            new Chart(engagementCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Music', 'Film', 'Sports', 'Gaming', 'TV', 'Creators'],
+                    datasets: [{
+                        label: 'Engagement Score',
+                        data: [85, 72, 90, 88, 65, 78],
+                        borderColor: 'rgba(139, 92, 246, 1)',
+                        backgroundColor: 'rgba(139, 92, 246, 0.2)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: 'white' } }
+                    },
+                    scales: {
+                        r: {
+                            ticks: { color: 'white' },
+                            grid: { color: 'rgba(255, 255, 255, 0.2)' },
+                            pointLabels: { color: 'white' }
+                        }
+                    }
+                }
+            });
+
+            // Security Chart
+            const securityCtx = document.getElementById('securityChart').getContext('2d');
+            new Chart(securityCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Smart Contracts', 'KYC/AML', 'Asset Storage', 'Legal Framework'],
+                    datasets: [{
+                        label: 'Security Score',
+                        data: [95, 88, 92, 85],
+                        backgroundColor: 'rgba(34, 197, 94, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: 'white' } }
+                    },
+                    scales: {
+                        y: { 
+                            ticks: { color: 'white' },
+                            max: 100
+                        },
+                        x: { ticks: { color: 'white' } }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
